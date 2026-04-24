@@ -1,0 +1,51 @@
+// GRADLEビルドシステムを拡張し追加の機能やタスクを利用できる。
+plugins {
+    id 'java' //Javaプラグイン
+    id 'org.springframework.boot' version '3.1.2' //Spring Bootプラグイン使用
+    id 'io.spring.dependency-management' version '1.1.2' //依存関係のバージョン管理のプラグイン
+}
+
+group = 'com.example' //プロジェクトのグループ名
+version = '0.0.1-SNAPSHOT' // 開発のバージョン
+
+java {
+    sourceCompatibility = '17' // Javaのバージョン指定
+}
+
+// ビルド、構成、コンフィグレーションを定義してる
+//configurations {
+//    compileOnly {
+//        extendsFrom annotationProcessor
+//    }
+//}
+
+// リポジトリの指定：Linuxのミラーサイト的な感じ
+repositories {
+    mavenCentral()
+}
+
+// Spring bootのライブラリやその他必要なライブラリが指定されている
+// ライブラリが必要なタイミングで使えるように書き分けしている。
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+//	implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+//	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.2'
+//	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+//	runtimeOnly 'com.h2database:h2'
+//	annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.2'
+//	implementation group: 'org.webjars', name: 'bootstrap', version: '5.2.3'
+//	implementation group: 'org.webjars', name: 'webjars-locator-core', version: '0.52'
+//	implementation group: 'nz.net.ultraq.thymeleaf', name: 'thymeleaf-layout-dialect', version: '3.2.1'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.named('bootRun') {
+    sourceResources sourceSets.main
+}
