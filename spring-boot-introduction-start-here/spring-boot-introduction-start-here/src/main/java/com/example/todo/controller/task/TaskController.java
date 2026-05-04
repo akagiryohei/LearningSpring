@@ -24,5 +24,11 @@ public class TaskController {
 
         // modelにtaskインスタンスを渡している
         model.addAttribute("taskList", taskList);
-        return "tasks/list";   }
+        return "tasks/list";
+    }
+
+    @GetMapping("/tasks/detail") // GET /tasks/${id}将来的にはこのようになる
+    public String showDetail() {
+        return "tasks/detail";
+    }
 }
