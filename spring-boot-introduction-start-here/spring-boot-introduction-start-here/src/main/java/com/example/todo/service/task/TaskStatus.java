@@ -7,5 +7,5 @@ public enum TaskStatus {
     // 着手中
     DOING,
     // 着手後
-    DONO
+    DONE
 }

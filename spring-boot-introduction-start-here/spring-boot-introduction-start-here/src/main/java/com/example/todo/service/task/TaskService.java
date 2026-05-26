@@ -21,4 +21,7 @@ public class TaskService {
         return taskRepository.selectById(taskId);
     }
 
+    public void create(TaskEntity newEntity) {
+        taskRepository.insert(newEntity);
+    }
 }
