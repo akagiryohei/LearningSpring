@@ -43,9 +43,10 @@ public class TaskController {
      */
     @GetMapping("/{id}") // GET /tasks/${id}
     public String showDetail(@PathVariable("id") long id, Model model) {
-        var taskEntity = taskService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Task not found: id = " + id));
-        model.addAttribute("task", TaskDTO.toDTO(taskEntity));
+        var taskDTO = taskService.findById(id)
+                .map(TaskDTO::toDTO)
+                .orElseThrow(TaskNotFoundException::new);
+        model.addAttribute("task", taskDTO);
         return "tasks/detail";
     }
 
@@ -55,7 +56,8 @@ public class TaskController {
      */
     // GET /tasks/creationForm
     @GetMapping("/creationForm")
-    public String showCreationForm(@ModelAttribute TaskForm form) {
+    public String showCreationForm(@ModelAttribute TaskForm form, Model model) {
+        model.addAttribute("mode", "CREATE");
         return "tasks/form";
     }
 
@@ -66,11 +68,29 @@ public class TaskController {
      */
     // POST /tasks/
     @PostMapping
-    public String create(@Validated TaskForm form, BindingResult bindingResult) {
+    public String create(@Validated TaskForm form, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            return showCreationForm(form);
+            return showCreationForm(form, model);
         }
         taskService.create(form.toEntity());
         return "redirect:/tasks";
     }
+
+    /**
+     * タスク修正画面表示
+     * @param id
+     * @param model
+     * @return
+     */
+    // GET /tasks/{taskId}/editForm
+    @GetMapping("{id}/editForm")
+    public String showEditForm(@PathVariable("id") long id, Model model) {
+        var form = taskService.findById(id)
+                .map(TaskForm::formEntity)
+                        .orElseThrow(TaskNotFoundException::new);
+        model.addAttribute("taskForm", form);
+        model.addAttribute("mode", "EDIT");
+        return "tasks/form";
+    }
+
 }
