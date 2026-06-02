@@ -22,8 +22,21 @@ public class TaskService {
         return taskRepository.selectById(taskId);
     }
 
+    /**
+     * タスク作成
+     * @param newEntity
+     */
     @Transactional
     public void create(TaskEntity newEntity) {
         taskRepository.insert(newEntity);
+    }
+
+    /**
+     * タスク更新
+     * @param entity
+     */
+    @Transactional
+    public void update(TaskEntity entity) {
+        taskRepository.update(entity);
     }
 }

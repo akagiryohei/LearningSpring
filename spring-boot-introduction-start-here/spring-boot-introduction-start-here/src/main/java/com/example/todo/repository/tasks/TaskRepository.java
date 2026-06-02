@@ -1,10 +1,7 @@
 package com.example.todo.repository.tasks;
 
 import com.example.todo.service.task.TaskEntity;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,4 +21,17 @@ public interface TaskRepository {
     VALUES (#{task.summary}, #{task.description}, #{task.status})
     """)
     void insert(@Param("task") TaskEntity newEntity);
+
+    @Update(
+            """
+            UPDATE tasks
+            SET
+                summary = #{task.summary},
+                description = #{task.description},
+                status = #{task.status}
+            WHERE
+                ID = #{task.id}
+            """
+    )
+    void update(@Param("task") TaskEntity entity);
 }

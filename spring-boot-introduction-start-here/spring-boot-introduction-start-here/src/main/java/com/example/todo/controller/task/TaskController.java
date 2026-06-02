@@ -93,4 +93,21 @@ public class TaskController {
         return "tasks/form";
     }
 
+    // PUT /tasks/{id}
+    @PutMapping("{id}")
+    public String update(
+            @PathVariable("id") long id,
+            @Validated @ModelAttribute TaskForm form,
+            BindingResult bindingResult,
+            Model model
+    ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("mode", "EDIT");
+            return "tasks/form";
+        }
+        var entity = form.toEntity(id);
+        taskService.update(entity);
+        return "redirect:/tasks/{id}";
+    }
+
 }
