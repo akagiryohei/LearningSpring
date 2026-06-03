@@ -14,7 +14,7 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
 
-    public List<TaskEntity> find() {
+    public List<TaskEntity> find(TaskSearchEntity taskSearchEntity) {
         return taskRepository.select();
     }
 
@@ -38,5 +38,14 @@ public class TaskService {
     @Transactional
     public void update(TaskEntity entity) {
         taskRepository.update(entity);
+    }
+
+    /**
+     * タスク削除
+     * @param id
+     */
+    @Transactional
+    public void delete(long id) {
+        taskRepository.delete(id);
     }
 }

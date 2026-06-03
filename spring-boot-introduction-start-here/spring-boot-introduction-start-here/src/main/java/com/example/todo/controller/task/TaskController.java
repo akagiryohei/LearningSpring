@@ -1,12 +1,16 @@
 package com.example.todo.controller.task;
 
+import com.example.todo.service.task.TaskSearchEntity;
 import com.example.todo.service.task.TaskService;
+import com.example.todo.service.task.TaskStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,9 +25,21 @@ public class TaskController {
      * @return
      */
     @GetMapping
-    public String list(Model model) {
+    public String list(TaskSearchForm searchForm, Model model) {
+        List<TaskStatus> statusList =  searchForm
+                .status()
+                .stream()
+                .map(TaskStatus::valueOf)
+                .toList();
+
+//        Udemyの記載方法（赤木は型の指定を変数にしたかったので修正した）
+//        var statusEntityList = Optional.ofNullable(searchForm.status())
+//                .map(statusList -> statusList.stream().map(TaskStatus::valueof).toList())
+//                .orElse(List.Of());
+
+        TaskSearchEntity searchEntity = new TaskSearchEntity(searchForm.summary(), statusList);
         // リスト型での初期化をしている
-        var taskList = taskService.find() // List<TaskEntity> -> List<TaskDTO>
+        var taskList = taskService.find(searchEntity) // List<TaskEntity> -> List<TaskDTO>
                 .stream()
                 // 1件ずつ取り出してTaskDTOに渡している
                 // ラムダ式で書かれてる
@@ -93,6 +109,14 @@ public class TaskController {
         return "tasks/form";
     }
 
+    /**
+     * タスク更新
+     * @param id
+     * @param form
+     * @param bindingResult
+     * @param model
+     * @return
+     */
     // PUT /tasks/{id}
     @PutMapping("{id}")
     public String update(
@@ -109,5 +133,18 @@ public class TaskController {
         taskService.update(entity);
         return "redirect:/tasks/{id}";
     }
+
+    /**
+     * タスク削除
+     * @param id
+     * @return
+     */
+    // DELETE /tasks/1
+    @DeleteMapping("{id}")
+    public String delete(@PathVariable("id") long id) {
+        taskService.delete(id);
+        return "redirect:/tasks";
+    }
+
 
 }
