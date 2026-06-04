@@ -1,6 +1,7 @@
 package com.example.todo.repository.tasks;
 
 import com.example.todo.service.task.TaskEntity;
+import com.example.todo.service.task.TaskSearchEntity;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -10,8 +11,25 @@ import java.util.Optional;
 @Mapper
 @Repository
 public interface TaskRepository {
-    @Select("SELECT id, summary, description, status FROM tasks;")
-    List<TaskEntity> select();
+    @Select("""
+            <script>
+                SELECT id, summary, description, status 
+                FROM tasks
+                <where>
+                    <if test='condition.summary != null and !condition.summary.isBlank()'>
+                        summary LIKE CONCAT('%', #{condition.summary}, '%')
+                    </if>
+                    <if test='condition.status != null and !condition.status.isEmpty()'>
+                        AND status IN (
+                            <foreach item='item' index='index' collection='condition.status' separator=','>
+                                #{item}
+                            </foreach>
+                        )
+                    </if>
+                </where>
+            </script>
+            """)
+    List<TaskEntity> select(@Param("condition") TaskSearchEntity taskSearchEntity);
 
     @Select("SELECT id, summary, description, status FROM tasks WHERE id = #{taskId}")
     Optional<TaskEntity> selectById(@Param("taskId") long taskId);
